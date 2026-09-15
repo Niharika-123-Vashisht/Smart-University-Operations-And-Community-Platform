@@ -1,0 +1,28 @@
+{
+  "name": "smart-university-platform",
+  "version": "1.0.0",
+  "description": "Smart University Operations & Community Platform - B.Tech Final Year Capstone Project",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "university",
+    "campus-management",
+    "react",
+    "nodejs",
+    "mongodb",
+    "express",
+    "capstone-project"
+  ],
+  "author": "B.Tech Final Year Capstone Team",
+  "license": "ISC"
+}
