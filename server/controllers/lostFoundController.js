@@ -4,7 +4,6 @@ export const getItems = async (req, res, next) => {
   try {
     const { type, category, status, search } = req.query;
     const query = {};
-
     if (type) query.type = type;
     if (category) query.category = category;
     if (status) query.status = status;
@@ -37,40 +36,11 @@ export const getItems = async (req, res, next) => {
     next(err);
   }
 };
+// Duplicate block removed – functionality provided by the exported getItems above
 
-// @desc    Get all lost and found items
-// @route   GET /api/lost-found
-// @access  Public / Private
-export const getItems = async (req, res, next) => {
-  try {
-    const { type, category, status, search } = req.query;
-    const query = {};
 
-    if (type) query.type = type;
-    if (category) query.category = category;
-    if (status) query.status = status;
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } },
-      ];
-    }
 
-    const items = await LostFound.find(query)
-      .populate('postedBy', 'name email avatar identifier')
-      .populate('resolvedBy', 'name email')
-      .sort({ createdAt: -1 });
 
-    res.status(200).json({
-      success: true,
-      count: items.length,
-      items,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
 
 // @desc    Get single item details
 // @route   GET /api/lost-found/:id

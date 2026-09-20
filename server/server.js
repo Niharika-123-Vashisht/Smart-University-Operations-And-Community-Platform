@@ -13,6 +13,7 @@ import userRoutes from './routes/userRoutes.js';
 import departmentRoutes from './routes/departmentRoutes.js';
 import complaintRoutes from './routes/complaintRoutes.js';
 import appointmentRoutes from './routes/appointmentRoutes.js';
+import issueRoutes from './routes/issueRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import lostFoundRoutes from './routes/lostFoundRoutes.js';
@@ -20,7 +21,7 @@ import skillRoutes from './routes/skillRoutes.js';
 import helpRequestRoutes from './routes/helpRequestRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-import analyticsRoutes from './routes/analyticsRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -72,6 +73,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/issues', issueRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/lost-found', lostFoundRoutes);
@@ -80,6 +82,7 @@ app.use('/api/help-requests', helpRequestRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Centralized error handling
 app.use(errorHandler);
