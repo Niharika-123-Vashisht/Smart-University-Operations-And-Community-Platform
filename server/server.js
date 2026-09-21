@@ -21,6 +21,7 @@ import skillRoutes from './routes/skillRoutes.js';
 import helpRequestRoutes from './routes/helpRequestRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 
 // Load environment variables
