@@ -1,4 +1,5 @@
 import paginationHelper from '../utils/pagination.js';
+import LostFound from '../models/LostFound.js';
 
 export const getItems = async (req, res, next) => {
   try {

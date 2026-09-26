@@ -36,7 +36,7 @@ export default function ReportIssue() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       showToast('Issue reported successfully.', 'success');
-      navigate('/student/my-issues');
+      navigate('/student/complaints');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to submit issue.', 'error');
     } finally {

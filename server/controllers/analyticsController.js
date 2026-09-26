@@ -114,7 +114,7 @@ export const getAdminAnalytics = async (req, res, next) => {
     const eventsData = await Event.aggregate([
       {
         $project: {
-          registeredCount: { $size: '$registeredStudents' },
+          registeredCount: { $size: { $ifNull: ['$registeredStudents', []] } },
           capacity: '$capacity',
         },
       },

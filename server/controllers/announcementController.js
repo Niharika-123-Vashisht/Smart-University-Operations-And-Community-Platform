@@ -23,6 +23,15 @@ export const getAnnouncements = async (req, res, next) => {
     if (priority) query.priority = priority;
     if (department) query.department = department;
 
+    // Filter out expired announcements unless includeExpired is requested
+    if (req.query.includeExpired !== 'true') {
+      query.$or = [
+        { expiresAt: null },
+        { expiresAt: { $exists: false } },
+        { expiresAt: { $gt: new Date() } },
+      ];
+    }
+
     const announcements = await Announcement.find(query)
       .populate('author', 'name role avatar')
       .populate('department', 'name code')

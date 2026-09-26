@@ -10,34 +10,38 @@ export const getComplaints = async (req, res, next) => {
   try {
     const { status, category, priority, department, search } = req.query;
     const query = {};
+    const conditions = [];
 
     // Role-based restrictions
     if (req.user.role === 'student') {
-      query.submittedBy = req.user._id;
+      conditions.push({ submittedBy: req.user._id });
     } else if (req.user.role === 'faculty') {
-      query.$or = [
-        { assignedTo: req.user._id },
-        { department: req.user.department },
-      ];
+      conditions.push({
+        $or: [
+          { assignedTo: req.user._id },
+          { department: req.user.department },
+        ],
+      });
     }
-    // Admin has unrestricted view
 
     // Apply filters
     if (status) query.status = status;
     if (category) query.category = category;
     if (priority) query.priority = priority;
     if (department) query.department = department;
+
     if (search) {
-      query.$or = query.$or
-        ? [
-            ...query.$or,
-            { title: { $regex: search, $options: 'i' } },
-            { description: { $regex: search, $options: 'i' } },
-          ]
-        : [
-            { title: { $regex: search, $options: 'i' } },
-            { description: { $regex: search, $options: 'i' } },
-          ];
+      const searchRegex = { $regex: search, $options: 'i' };
+      conditions.push({
+        $or: [
+          { title: searchRegex },
+          { description: searchRegex },
+        ],
+      });
+    }
+
+    if (conditions.length > 0) {
+      query.$and = conditions;
     }
 
     const { page, limit, skip } = paginationHelper(req.query);
@@ -226,12 +230,20 @@ export const updateComplaintStatus = async (req, res, next) => {
       });
     }
 
-    // Validate permitted transitions
+    const allowedStatuses = ['Pending', 'Assigned', 'In Progress', 'Resolved', 'Confirmed'];
+    if (!status || !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid complaint status value provided.',
+      });
+    }
+
+    // Validate permitted transitions for non-admin staff
     const validTransitions = ['In Progress', 'Resolved'];
     if (!validTransitions.includes(status) && req.user.role !== 'admin') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid status transition requested.',
+        message: 'Invalid status transition requested for faculty.',
       });
     }
 

@@ -17,6 +17,13 @@ export const register = async (req, res, next) => {
   try {
     const { name, email, password, role, department, identifier, phone } = req.body;
 
+    if (!name || !email || typeof email !== 'string' || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide name, valid email, and password.',
+      });
+    }
+
     // Check if user already exists
     const userExists = await User.findOne({ email: email.toLowerCase() });
     if (userExists) {
@@ -26,8 +33,9 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // Restrict direct admin registration via public API
-    const userRole = role === 'admin' ? 'student' : (role || 'student');
+    // Restrict registration role strictly to student or faculty
+    const validRoles = ['student', 'faculty'];
+    const userRole = validRoles.includes(role) ? role : 'student';
 
     const user = await User.create({
       name,
@@ -68,10 +76,10 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || typeof email !== 'string' || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide both email and password.',
+        message: 'Please provide both valid email and password.',
       });
     }
 

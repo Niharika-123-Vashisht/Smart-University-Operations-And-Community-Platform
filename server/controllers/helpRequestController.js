@@ -1,5 +1,11 @@
 import paginationHelper from '../utils/pagination.js';
+import HelpRequest from '../models/HelpRequest.js';
+import Skill from '../models/Skill.js';
+import { createNotification } from '../utils/notify.js';
 
+// @desc    Get all help requests with filters & pagination
+// @route   GET /api/help-requests
+// @access  Private
 export const getHelpRequests = async (req, res, next) => {
   try {
     const { category, status, urgency, search } = req.query;
@@ -28,40 +34,6 @@ export const getHelpRequests = async (req, res, next) => {
       pages: Math.ceil(total / limit),
       count: requests.length,
       total,
-      requests,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-// @desc    Get all help requests with filters
-// @route   GET /api/help-requests
-// @access  Private
-export const getHelpRequests = async (req, res, next) => {
-  try {
-    const { category, status, urgency, search } = req.query;
-    const query = {};
-
-    if (category) query.category = category;
-    if (status) query.status = status;
-    if (urgency) query.urgency = urgency;
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { skillNeeded: { $regex: search, $options: 'i' } },
-      ];
-    }
-
-    const requests = await HelpRequest.find(query)
-      .populate('student', 'name email identifier avatar department')
-      .populate('acceptedBy', 'name email identifier avatar department')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: requests.length,
       requests,
     });
   } catch (err) {

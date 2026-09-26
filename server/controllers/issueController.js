@@ -31,7 +31,7 @@ export const createIssue = async (req, res, next) => {
         title: `[Issue] ${title}`,
         message: `A new ${category} issue was reported.`,
         type: 'Issue',
-        link: '/admin/issues',
+        link: '/lost-found',
       });
     }
     res.status(201).json({ success: true, issue });
@@ -61,11 +61,12 @@ export const getIssueById = async (req, res, next) => {
     if (!issue) {
       return res.status(404).json({ success: false, message: 'Issue not found.' });
     }
+    const reporterId = issue.reporter?._id ? issue.reporter._id.toString() : issue.reporter?.toString();
     // Authorization: owner, admin, or faculty can view
     if (
       req.user.role !== 'admin' &&
       req.user.role !== 'faculty' &&
-      issue.reporter._id.toString() !== req.user._id.toString()
+      reporterId !== req.user._id.toString()
     ) {
       return res.status(403).json({ success: false, message: 'Not authorized to view this issue.' });
     }
@@ -106,7 +107,7 @@ export const updateIssueStatus = async (req, res, next) => {
       title: `Issue status updated to ${status}`,
       message: `Your reported issue "${issue.title}" is now ${status}.`,
       type: 'Issue',
-      link: '/my-issues',
+      link: '/lost-found',
     });
     res.status(200).json({ success: true, issue });
   } catch (err) {
@@ -123,8 +124,9 @@ export const deleteIssue = async (req, res, next) => {
     if (!issue) {
       return res.status(404).json({ success: false, message: 'Issue not found.' });
     }
+    const reporterId = issue.reporter?._id ? issue.reporter._id.toString() : issue.reporter?.toString();
     // Only owner can delete and only if still pending
-    if (issue.reporter._id.toString() !== req.user._id.toString()) {
+    if (reporterId !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this issue.' });
     }
     if (issue.status !== 'Pending') {

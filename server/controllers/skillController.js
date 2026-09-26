@@ -60,6 +60,13 @@ export const addSkill = async (req, res, next) => {
   try {
     const { skillName, category, proficiencyLevel, availability, description } = req.body;
 
+    if (!skillName || typeof skillName !== 'string' || !skillName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid skill name.',
+      });
+    }
+
     const existing = await Skill.findOne({
       user: req.user._id,
       skillName: { $regex: `^${skillName.trim()}$`, $options: 'i' },

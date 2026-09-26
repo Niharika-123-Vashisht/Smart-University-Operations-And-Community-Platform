@@ -9,13 +9,13 @@ import HelpRequest from '../models/HelpRequest.js';
 export const getStudentDashboardStats = async (req, res, next) => {
   try {
     const totalNotices = await Announcement.countDocuments();
-    const totalIssues = await Issue.countDocuments({ postedBy: req.user._id });
+    const totalIssues = await Issue.countDocuments({ reporter: req.user._id });
     const pendingIssues = await Issue.countDocuments({
-      postedBy: req.user._id,
+      reporter: req.user._id,
       status: { $in: ['Pending', 'In Progress'] },
     });
     const totalLostFound = await LostFound.countDocuments();
-    const totalHelpRequests = await HelpRequest.countDocuments({ postedBy: req.user._id });
+    const totalHelpRequests = await HelpRequest.countDocuments({ student: req.user._id });
 
     res.status(200).json({
       success: true,

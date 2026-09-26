@@ -29,9 +29,10 @@ export const getEvents = async (req, res, next) => {
     const enhancedEvents = events.map((ev) => {
       const obj = ev.toObject({ virtuals: true });
       if (req.user) {
-        obj.isUserRegistered = ev.registeredStudents.some(
-          (reg) => reg.student.toString() === req.user._id.toString()
-        );
+        obj.isUserRegistered = (ev.registeredStudents || []).some((reg) => {
+          const sId = reg.student?._id ? reg.student._id.toString() : reg.student?.toString();
+          return sId === req.user._id.toString();
+        });
       }
       return obj;
     });
@@ -67,9 +68,10 @@ export const getEventById = async (req, res, next) => {
 
     const obj = event.toObject({ virtuals: true });
     if (req.user) {
-      obj.isUserRegistered = event.registeredStudents.some(
-        (reg) => reg.student._id.toString() === req.user._id.toString()
-      );
+      obj.isUserRegistered = (event.registeredStudents || []).some((reg) => {
+        const sId = reg.student?._id ? reg.student._id.toString() : reg.student?.toString();
+        return sId === req.user._id.toString();
+      });
     }
 
     res.status(200).json({
@@ -123,10 +125,13 @@ export const registerForEvent = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
 
+    if (!event.registeredStudents) event.registeredStudents = [];
+
     // 1. Check duplicate registration
-    const isAlreadyRegistered = event.registeredStudents.some(
-      (reg) => reg.student.toString() === req.user._id.toString()
-    );
+    const isAlreadyRegistered = event.registeredStudents.some((reg) => {
+      const sId = reg.student?._id ? reg.student._id.toString() : reg.student?.toString();
+      return sId === req.user._id.toString();
+    });
     if (isAlreadyRegistered) {
       return res.status(400).json({
         success: false,
@@ -135,7 +140,7 @@ export const registerForEvent = async (req, res, next) => {
     }
 
     // 2. Enforce capacity limit
-    if (event.registeredStudents.length >= event.capacity) {
+    if (event.capacity && event.registeredStudents.length >= event.capacity) {
       return res.status(400).json({
         success: false,
         message: 'Registration full. Maximum capacity for this event has been reached.',
@@ -181,10 +186,12 @@ export const cancelRegistration = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
 
+    if (!event.registeredStudents) event.registeredStudents = [];
     const initialLength = event.registeredStudents.length;
-    event.registeredStudents = event.registeredStudents.filter(
-      (reg) => reg.student.toString() !== req.user._id.toString()
-    );
+    event.registeredStudents = event.registeredStudents.filter((reg) => {
+      const sId = reg.student?._id ? reg.student._id.toString() : reg.student?.toString();
+      return sId !== req.user._id.toString();
+    });
 
     if (event.registeredStudents.length === initialLength) {
       return res.status(400).json({

@@ -1,6 +1,7 @@
 import Appointment from '../models/Appointment.js';
 import User from '../models/User.js';
 import { createNotification } from '../utils/notify.js';
+import paginationHelper from '../utils/pagination.js';
 
 // @desc    Faculty creates appointment slot(s)
 // @route   POST /api/appointments/slots
